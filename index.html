@@ -10,15 +10,34 @@
       color: white;
       margin-top: 50px;
     }
+
     #gameScreen {
       display: none;
     }
-    #movieImage {
+
+    .image-container {
+      position: relative;
+      display: inline-block;
       width: 300px;
       height: auto;
-      filter: brightness(0.1); /* Hide image until "Open" is clicked */
-      transition: filter 0.5s;
     }
+
+    #movieImage {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    #imageOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      z-index: 2;
+    }
+
     button {
       margin: 5px;
       padding: 10px 20px;
@@ -39,7 +58,13 @@
   <div id="gameScreen">
     <h1>🎬 Movie Guessing Game</h1>
     <h2 id="playerTurn">Player A's Turn</h2>
-    <img id="movieImage" src="" alt="Movie Frame"><br>
+
+    <div class="image-container">
+      <img id="movieImage" src="" alt="Movie Frame">
+      <div id="imageOverlay"></div>
+    </div>
+
+    <br>
     <input type="text" id="guessInput" placeholder="Guess the movie...">
     <button onclick="checkGuess()">Submit</button><br>
     <button onclick="revealImage()">Open</button>
@@ -63,6 +88,7 @@
     const lobbyScreen = document.getElementById('lobbyScreen');
     const gameScreen = document.getElementById('gameScreen');
     const movieImage = document.getElementById('movieImage');
+    const imageOverlay = document.getElementById('imageOverlay');
     const guessInput = document.getElementById('guessInput');
     const message = document.getElementById('message');
     const scoreADisplay = document.getElementById('scoreA');
@@ -78,14 +104,14 @@
 
     function loadImage() {
       movieImage.src = images[currentIndex].src;
-      movieImage.style.filter = "brightness(0.1)";
+      imageOverlay.style.display = "block"; // Reset overlay
       guessInput.value = "";
       message.textContent = "";
       playerTurnDisplay.textContent = `Player ${currentPlayer}'s Turn`;
     }
 
     function revealImage() {
-      movieImage.style.filter = "brightness(1)";
+      imageOverlay.style.display = "none";
     }
 
     function checkGuess() {
