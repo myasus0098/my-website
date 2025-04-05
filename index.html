@@ -1,31 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Movie Guessing Game</title>
   <style>
     body {
-      font-family: sans-serif;
-      text-align: center;
-      background-color: #111;
+      background-color: #0c0808;
+      font-family: 'Arial', sans-serif;
       color: white;
-      margin-top: 50px;
+      text-align: center;
+      margin: 0;
+      padding: 0;
     }
 
-    #gameScreen {
-      display: none;
+    #container {
+      padding: 30px;
     }
 
-    .image-container {
+    .player-scores {
+      display: flex;
+      justify-content: flex-end;
+      gap: 100px;
+      margin-right: 100px;
+    }
+
+    .score-circle {
+      width: 100px;
+      height: 100px;
+      background-color: #7c0f0f;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: white;
+      flex-direction: column;
+    }
+
+    .label {
+      font-size: 30px;
+      font-weight: bold;
+      color: white;
+    }
+
+    #image-box {
+      width: 800px;
+      height: 400px;
+      margin: 40px auto;
+      border: 5px solid white;
       position: relative;
-      display: inline-block;
-      width: 300px;
-      height: auto;
     }
 
     #movieImage {
       width: 100%;
-      height: auto;
-      display: block;
+      height: 100%;
+      object-fit: cover;
+      display: none;
     }
 
     #imageOverlay {
@@ -38,101 +68,152 @@
       z-index: 2;
     }
 
-    button {
-      margin: 5px;
+    .controls {
+      margin-top: 30px;
+    }
+
+    .open-button {
+      background-color: #7c0f0f;
+      color: white;
+      font-size: 32px;
+      padding: 10px 40px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      margin-right: 20px;
+    }
+
+    .input-area {
+      background-color: #d4c6fd;
+      padding: 10px 30px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      margin-right: 20px;
+    }
+
+    #guessInput {
+      border: none;
+      font-size: 18px;
+      padding: 5px;
+      outline: none;
+    }
+
+    .next-button {
+      background-color: #7c0f0f;
+      color: white;
       padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .big-title {
+      font-size: 150px;
+      color: teal;
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.1;
     }
   </style>
 </head>
 <body>
+  <div id="container">
+    <div class="player-scores">
+      <div class="score-circle">
+        <div>A</div>
+        <div id="scoreA">0</div>
+      </div>
+      <div class="score-circle">
+        <div>B</div>
+        <div id="scoreB">0</div>
+      </div>
+    </div>
 
-  <!-- Lobby -->
-  <div id="lobbyScreen">
-    <h1>🎬 Movie Guessing Game Lobby</h1>
-    <p>Select your role:</p>
-    <button onclick="selectPlayer('A')">I'm Player A</button>
-    <button onclick="selectPlayer('B')">I'm Player B</button>
-  </div>
-
-  <!-- Game Screen -->
-  <div id="gameScreen">
-    <h1>🎬 Movie Guessing Game</h1>
-    <h2 id="playerTurn">Player A's Turn</h2>
-
-    <div class="image-container">
+    <div id="image-box">
       <img id="movieImage" src="" alt="Movie Frame">
       <div id="imageOverlay"></div>
     </div>
 
-    <br>
-    <input type="text" id="guessInput" placeholder="Guess the movie...">
-    <button onclick="checkGuess()">Submit</button><br>
-    <button onclick="revealImage()">Open</button>
-    <button onclick="nextImage()">Next</button><br>
-    <div id="message"></div>
-    <p>Score A: <span id="scoreA">0</span> | Score B: <span id="scoreB">0</span></p>
+    <div class="controls">
+      <button class="open-button" onclick="openImage()">OPEN</button>
+
+      <div class="input-area">
+        <span style="font-weight:bold;margin-right:10px;">MOVIE</span>
+        <input type="text" id="guessInput" placeholder="TYPE HERE.............">
+      </div>
+
+      <button class="next-button" onclick="nextImage()">NEXT</button>
+    </div>
   </div>
+
+  <div class="big-title">GUESS THE</div>
 
   <script>
     const images = [
       { src: "https://myasus0098.github.io/my-website/inception-paris.jpg", answer: "inception" },
-      { src: "https://i.imgur.com/zf7Q9Zb.jpg", answer: "avengers" },
-      { src: "https://i.imgur.com/t8f5ktS.jpg", answer: "titanic" }
+      { src: "https://i.imgur.com/z4d4kWk.jpg", answer: "avengers" },
+      { src: "https://i.imgur.com/v5nKX7v.jpg", answer: "titanic" }
     ];
 
     let currentIndex = 0;
+    let scoreA = 0;
+    let scoreB = 0;
     let currentPlayer = 'A';
-    let playerRole = '';
-    let scoreA = 0, scoreB = 0;
 
-    const lobbyScreen = document.getElementById('lobbyScreen');
-    const gameScreen = document.getElementById('gameScreen');
-    const movieImage = document.getElementById('movieImage');
-    const imageOverlay = document.getElementById('imageOverlay');
-    const guessInput = document.getElementById('guessInput');
-    const message = document.getElementById('message');
-    const scoreADisplay = document.getElementById('scoreA');
-    const scoreBDisplay = document.getElementById('scoreB');
-    const playerTurnDisplay = document.getElementById('playerTurn');
-
-    function selectPlayer(role) {
-      playerRole = role;
-      lobbyScreen.style.display = "none";
-      gameScreen.style.display = "block";
-      loadImage();
-    }
+    const movieImage = document.getElementById("movieImage");
+    const imageOverlay = document.getElementById("imageOverlay");
+    const guessInput = document.getElementById("guessInput");
+    const scoreADisplay = document.getElementById("scoreA");
+    const scoreBDisplay = document.getElementById("scoreB");
 
     function loadImage() {
+      movieImage.style.display = "none";
+      imageOverlay.style.display = "block";
       movieImage.src = images[currentIndex].src;
-      imageOverlay.style.display = "block"; // Reset overlay
-      guessInput.value = "";
-      message.textContent = "";
-      playerTurnDisplay.textContent = `Player ${currentPlayer}'s Turn`;
     }
 
-    function revealImage() {
+    function openImage() {
+      movieImage.style.display = "block";
       imageOverlay.style.display = "none";
-    }
-
-    function checkGuess() {
-      const guess = guessInput.value.trim().toLowerCase();
-      if (guess === images[currentIndex].answer) {
-        message.textContent = "✅ Correct!";
-        if (currentPlayer === 'A') scoreA++;
-        else scoreB++;
-        scoreADisplay.textContent = scoreA;
-        scoreBDisplay.textContent = scoreB;
-      } else {
-        message.textContent = "❌ Wrong! Try again or press Next.";
-      }
     }
 
     function nextImage() {
       currentIndex = (currentIndex + 1) % images.length;
-      currentPlayer = currentPlayer === 'A' ? 'B' : 'A';
       loadImage();
+      guessInput.value = "";
+      currentPlayer = currentPlayer === 'A' ? 'B' : 'A';
     }
-  </script>
 
+    function checkGuess() {
+      const guess = guessInput.value.trim().toLowerCase();
+      const correct = images[currentIndex].answer.toLowerCase();
+      if (guess === correct) {
+        if (currentPlayer === 'A') {
+          scoreA++;
+          scoreADisplay.textContent = scoreA;
+        } else {
+          scoreB++;
+          scoreBDisplay.textContent = scoreB;
+        }
+        alert("Correct!");
+      } else {
+        alert("Wrong! Try again or press Next.");
+      }
+    }
+
+    // Trigger guess check on Enter
+    guessInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") checkGuess();
+    });
+
+    // Initial load
+    loadImage();
+  </script>
 </body>
 </html>
