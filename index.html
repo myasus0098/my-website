@@ -1,87 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Movie Guess Game</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #111;
-      color: #fff;
-      padding: 20px;
-    }
-    #game-container {
-      margin: 20px auto;
-    }
-    img {
-      width: 400px;
-      height: auto;
-      margin-bottom: 10px;
-      transition: filter 0.3s ease;
-      filter: blur(8px);
-    }
-    input {
-      padding: 8px;
-      font-size: 16px;
-    }
-    button {
-      padding: 10px 15px;
-      margin: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    #turn {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-    #score {
-      margin-top: 10px;
-      font-size: 18px;
-    }
-  </style>
-</head>
 <body>
-
   <h1>🎬 Movie Guessing Game</h1>
-  <div id="turn">Player A's Turn</div>
 
-  <div id="game-container">
-    <img id="movieImage" src="" alt="Movie Scene">
-    <div>
-      <input type="text" id="guessInput" placeholder="Guess the movie...">
-      <button onclick="checkGuess()">Submit</button>
-    </div>
-    <div id="message"></div>
-    <button id="openBtn" onclick="revealImage()">Open</button>
-    <button id="nextBtn" onclick="nextImage()">Next</button>
-
-    <div id="score">
-      Score A: <span id="scoreA">0</span> |
-      Score B: <span id="scoreB">0</span>
-    </div>
+  <!-- LOBBY -->
+  <div id="lobby">
+    <p>Select your role:</p>
+    <button onclick="chooseRole('A')">I'm Player A</button>
+    <button onclick="chooseRole('B')">I'm Player B</button>
   </div>
 
-  <script>
-    const images = [
-      { src: "https://myasus0098.github.io/my-website/inception-paris.jpg", answer: "inception" },
-      { src: "https://i.imgur.com/ZJ1lhIo.jpeg", answer: "avengers" },
-      { src: "https://i.imgur.com/q2sPb6H.jpeg", answer: "titanic" }
-    ];
+  <!-- GAME UI -->
+  <div id="game" style="display: none;">
+    <h2 id="turnText">Player A's Turn</h2>
+    <img id="movieImage" src="" alt="Movie Frame" style="width:400px; filter: blur(8px);"><br><br>
+    
+    <input type="text" id="guessInput" placeholder="Guess the movie...">
+    <button onclick="checkGuess()">Submit</button><br><br>
 
-    let currentIndex = 0;
-    let currentPlayerIndex = 0;
-    let scores = [0, 0]; // A = 0, B = 1
+    <button id="openBtn" onclick="revealImage()">Open</button>
+    <button id="nextBtn" onclick="nextImage()">Next</button><br><br>
 
-    const imageElement = document.getElementById("movieImage");
-    const guessInput = document.getElementById("guessInput");
-    const messageElement = document.getElementById("message");
-    const scoreAElement = document.getElementById("scoreA");
-    const scoreBElement = document.getElementById("scoreB");
-    const turnElement = document.getElementById("turn");
-
-    const players = ["A", "B"];
-
-    function loadImage() {
-      imageElement.src = images[currentIndex].src;
-      imageElement
+    <div id="message"></div>
+    <div id="scoreDisplay">Score A: 0 | Score B: 0</div>
+  </div>
