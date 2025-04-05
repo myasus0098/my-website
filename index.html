@@ -1,12 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My First Website</title>
+  <meta charset="UTF-8">
+  <title>Guess the Movie!</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+    }
+    img {
+      max-width: 80%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    input, button {
+      font-size: 18px;
+      padding: 10px;
+      margin: 10px;
+    }
+    .score {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .message {
+      font-size: 20px;
+      margin-top: 10px;
+    }
+  </style>
 </head>
-<<a href="index2.html">Go to Second Page</a>
->
-  <h1>Welcome to my new website!</h1>
+<body>
 
-  <p>This is my first website!</p>
+  <h1>🎬 Guess the Movie</h1>
+  <div class="score">Score: <span id="score">0</span></div>
+  <img id="movieImage" src="" alt="Movie Frame"><br>
+  <input type="text" id="guessInput" placeholder="Type your guess here">
+  <button onclick="checkGuess()">Submit</button>
+
+  <div class="message" id="message"></div>
+
+  <script>
+    // List of movie images and their answers
+    const images = [
+      { src: "https://i.imgur.com/YOURIMAGE1.jpg", answer: "inception" },
+      { src: "https://i.imgur.com/YOURIMAGE2.jpg", answer: "avengers" },
+      { src: "https://i.imgur.com/YOURIMAGE3.jpg", answer: "titanic" }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const imageElement = document.getElementById("movieImage");
+    const messageElement = document.getElementById("message");
+    const scoreElement = document.getElementById("score");
+
+    function loadImage() {
+      imageElement.src = images[currentIndex].src;
+      document.getElementById("guessInput").value = "";
+      messageElement.textContent = "";
+    }
+
+    function checkGuess() {
+      const userGuess = document.getElementById("guessInput").value.toLowerCase().trim();
+      const correctAnswer = images[currentIndex].answer.toLowerCase();
+
+      if (userGuess === correctAnswer) {
+        messageElement.textContent = "✅ Correct!";
+        score += 100;
+        scoreElement.textContent = score;
+        currentIndex = (currentIndex + 1) % images.length;
+        setTimeout(loadImage, 1000); // Load next image after a short delay
+      } else {
+        messageElement.textContent = "❌ Try again!";
+      }
+    }
+
+    loadImage(); // Load the first image
+  </script>
+
 </body>
 </html>
