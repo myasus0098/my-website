@@ -1,24 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Movie Guessing Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #111;
+      color: white;
+      margin-top: 50px;
+    }
+    #gameScreen {
+      display: none;
+    }
+    #movieImage {
+      width: 300px;
+      height: auto;
+      filter: brightness(0.1); /* Hide image until "Open" is clicked */
+      transition: filter 0.5s;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
 <body>
-  <h1>🎬 Movie Guessing Game</h1>
 
-  <!-- LOBBY -->
-  <div id="lobby">
+  <!-- Lobby -->
+  <div id="lobbyScreen">
+    <h1>🎬 Movie Guessing Game Lobby</h1>
     <p>Select your role:</p>
-    <button onclick="chooseRole('A')">I'm Player A</button>
-    <button onclick="chooseRole('B')">I'm Player B</button>
+    <button onclick="selectPlayer('A')">I'm Player A</button>
+    <button onclick="selectPlayer('B')">I'm Player B</button>
   </div>
 
-  <!-- GAME UI -->
-  <div id="game" style="display: none;">
-    <h2 id="turnText">Player A's Turn</h2>
-    <img id="movieImage" src="" alt="Movie Frame" style="width:400px; filter: blur(8px);"><br><br>
-    
+  <!-- Game Screen -->
+  <div id="gameScreen">
+    <h1>🎬 Movie Guessing Game</h1>
+    <h2 id="playerTurn">Player A's Turn</h2>
+    <img id="movieImage" src="" alt="Movie Frame"><br>
     <input type="text" id="guessInput" placeholder="Guess the movie...">
-    <button onclick="checkGuess()">Submit</button><br><br>
-
-    <button id="openBtn" onclick="revealImage()">Open</button>
-    <button id="nextBtn" onclick="nextImage()">Next</button><br><br>
-
+    <button onclick="checkGuess()">Submit</button><br>
+    <button onclick="revealImage()">Open</button>
+    <button onclick="nextImage()">Next</button><br>
     <div id="message"></div>
-    <div id="scoreDisplay">Score A: 0 | Score B: 0</div>
+    <p>Score A: <span id="scoreA">0</span> | Score B: <span id="scoreB">0</span></p>
   </div>
+
+  <script>
+    const images = [
+      { src: "https://myasus0098.github.io/my-website/inception-paris.jpg", answer: "inception" },
+      { src: "https://i.imgur.com/zf7Q9Zb.jpg", answer: "avengers" },
+      { src: "https://i.imgur.com/t8f5ktS.jpg", answer: "titanic" }
+    ];
+
+    let currentIndex = 0;
+    let currentPlayer = 'A';
+    let playerRole = '';
+    let scoreA = 0, scoreB = 0;
+
+    const lobbyScreen = document.getElementById('lobbyScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const movieImage = document.getElementById('movieImage');
+    const guessInput = document.getElementById('guessInput');
+    const message = document.getElementById('message');
+    const scoreADisplay = document.getElementById('scoreA');
+    const scoreBDisplay = document.getElementById('scoreB');
+    const playerTurnDisplay = document.getElementById('playerTurn');
+
+    function selectPlayer(role) {
+      playerRole = role;
+      lobbyScreen.style.display = "none";
+      gameScreen.style.display = "block";
+      loadImage();
+    }
+
+    function loadImage() {
+      movieImage.src = images[currentIndex].src;
+      movieImage.style.filter = "brightness(0.1)";
+      guessInput.value = "";
+      message.textContent = "";
+      playerTurnDisplay.textContent = `Player ${currentPlayer}'s Turn`;
+    }
+
+    function revealImage() {
+      movieImage.style.filter = "brightness(1)";
+    }
+
+    function checkGuess() {
+      const guess = guessInput.value.trim().toLowerCase();
+      if (guess === images[currentIndex].answer) {
+        message.textContent = "✅ Correct!";
+        if (currentPlayer === 'A') scoreA++;
+        else scoreB++;
+        scoreADisplay.textContent = scoreA;
+        scoreBDisplay.textContent = scoreB;
+      } else {
+        message.textContent = "❌ Wrong! Try again or press Next.";
+      }
+    }
+
+    function nextImage() {
+      currentIndex = (currentIndex + 1) % images.length;
+      currentPlayer = currentPlayer === 'A' ? 'B' : 'A';
+      loadImage();
+    }
+  </script>
+
+</body>
+</html>
