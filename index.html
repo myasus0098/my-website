@@ -51,28 +51,42 @@
     }
 
     .frame-box {
-      background-color: white;
       border-radius: 12px;
       padding: 0;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
       width: 720px;
       height: 405px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 80px;
       overflow: hidden;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      cursor: move;
     }
 
     .frame-box img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .maximize-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 20;
     }
 
     .input-area {
       position: absolute;
-      bottom: 90px;
+      bottom: 130px;
     }
 
     input {
@@ -114,7 +128,8 @@
   <div class="timer" id="timer">Timer: 0</div>
 
   <div class="content">
-    <div class="frame-box">
+    <div class="frame-box" id="draggable-frame">
+      <button class="maximize-btn" onclick="maximizeFrame()">⛶</button>
       <img src="https://raw.githubusercontent.com/myasus0098/my-website/main/inception-paris.jpg" alt="Movie Frame" />
     </div>
   </div>
@@ -161,6 +176,48 @@
       playerAScore += 10;
       document.getElementById('player-a').textContent = 'Player A: ' + playerAScore;
     }
+
+    function maximizeFrame() {
+      const frameBox = document.getElementById('draggable-frame');
+      if (frameBox.classList.contains('fullscreen')) {
+        frameBox.style.width = '720px';
+        frameBox.style.height = '405px';
+        frameBox.style.top = '50%';
+        frameBox.style.left = '50%';
+        frameBox.style.transform = 'translate(-50%, -50%)';
+        frameBox.classList.remove('fullscreen');
+      } else {
+        frameBox.style.width = '100vw';
+        frameBox.style.height = '100vh';
+        frameBox.style.top = '0';
+        frameBox.style.left = '0';
+        frameBox.style.transform = 'none';
+        frameBox.classList.add('fullscreen');
+      }
+    }
+
+    // Make frame draggable
+    const frame = document.getElementById('draggable-frame');
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    frame.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      offsetX = e.clientX - frame.getBoundingClientRect().left;
+      offsetY = e.clientY - frame.getBoundingClientRect().top;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        frame.style.left = `${e.clientX - offsetX}px`;
+        frame.style.top = `${e.clientY - offsetY}px`;
+        frame.style.transform = 'none';
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
   </script>
 
 </body>
