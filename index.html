@@ -1,26 +1,234 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guess The Movie</title>
-    <link rel="stylesheet" href="styles.css">
+  <title>Movie Guess Game</title>
+  <style>
+    body {
+      background-image: url('https://raw.githubusercontent.com/myasus0098/my-website/main/A%20(4).png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      height: 100vh;
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .player-scores {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    .player {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 10px 15px;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .timer {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 10px 20px;
+      border-radius: 10px;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      z-index: 20;
+    }
+
+    .content {
+      margin-top: 60px;
+      text-align: center;
+    }
+
+    .frame-box {
+      border-radius: 12px;
+      padding: 0;
+      width: 720px;
+      height: 405px;
+      overflow: hidden;
+      position: absolute;
+      z-index: 5;
+      cursor: move;
+      display: none;
+    }
+
+    .frame-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .maximize-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .input-area {
+      position: absolute;
+      bottom: 130px;
+      z-index: 20;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      width: 200px;
+    }
+
+    .buttons {
+      position: absolute;
+      bottom: 40px;
+      display: flex;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .open-btn { background-color: green; color: white; }
+    .next-btn { background-color: red; color: white; }
+    .submit-btn { background-color: blue; color: white; }
+  </style>
 </head>
 <body>
-    <div class="game-container">
-        <div class="clue-box">
-            <!-- Add your clues or images dynamically here -->
-            <p id="clue">Clue goes here...</p>
-        </div>
-        <div class="title">
-            <span>GUESS THE</span>
-            <span class="movie-banner">MOVIE</span>
-        </div>
-        <div class="input-section">
-            <input type="text" id="guess-input" placeholder="Enter your guess">
-            <button id="submit-button">Submit</button>
-        </div>
+
+  <div class="player-scores">
+    <div class="player" id="player-a">Player A: 0</div>
+    <div class="player" id="player-b">Player B: 0</div>
+  </div>
+
+  <div class="timer" id="timer">Timer: 0</div>
+
+  <div class="content">
+    <div class="frame-box" id="draggable-frame">
+      <button class="maximize-btn" onclick="maximizeFrame()">⛶</button>
+      <img src="https://raw.githubusercontent.com/myasus0098/my-website/main/inception-paris.jpg" alt="Movie Frame" />
     </div>
-    <script src="script.js"></script>
+  </div>
+
+  <div class="input-area">
+    <input type="text" id="movieInput" placeholder="Enter movie name..." />
+  </div>
+
+  <div class="buttons">
+    <button class="open-btn" onclick="startTimer(); showFrameBox();">OPEN</button>
+    <button class="submit-btn" onclick="submitGuess()">SUBMIT</button>
+    <button class="next-btn">NEXT</button>
+  </div>
+
+  <script>
+    let timerElement = document.getElementById('timer');
+    let playerAScore = 0;
+    let playerBScore = 0;
+    let timer;
+    let timeLeft = 15;
+
+    function startTimer() {
+      clearInterval(timer);
+      timeLeft = 15;
+      timerElement.textContent = 'Timer: ' + timeLeft;
+      timer = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = 'Timer: ' + timeLeft;
+        if (timeLeft === 0) {
+          clearInterval(timer);
+          updateScore();
+        }
+      }, 1000);
+    }
+
+    function showFrameBox() {
+      const frame = document.getElementById('draggable-frame');
+      frame.style.display = 'block';
+      frame.style.top = '50%';
+      frame.style.left = '50%';
+      frame.style.transform = 'translate(-50%, -50%)';
+    }
+
+    function submitGuess() {
+      const input = document.getElementById('movieInput').value.trim().toLowerCase();
+      if (input === 'correct') {
+        alert('Correct Guess!');
+      }
+    }
+
+    function updateScore() {
+      playerAScore += 10;
+      document.getElementById('player-a').textContent = 'Player A: ' + playerAScore;
+    }
+
+    function maximizeFrame() {
+      const frameBox = document.getElementById('draggable-frame');
+      if (frameBox.classList.contains('fullscreen')) {
+        frameBox.style.width = '720px';
+        frameBox.style.height = '405px';
+        frameBox.style.top = '50%';
+        frameBox.style.left = '50%';
+        frameBox.style.transform = 'translate(-50%, -50%)';
+        frameBox.classList.remove('fullscreen');
+      } else {
+        frameBox.style.width = '100vw';
+        frameBox.style.height = '100vh';
+        frameBox.style.top = '0';
+        frameBox.style.left = '0';
+        frameBox.style.transform = 'none';
+        frameBox.classList.add('fullscreen');
+      }
+    }
+
+    // Make frame draggable
+    const frame = document.getElementById('draggable-frame');
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    frame.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      offsetX = e.clientX - frame.getBoundingClientRect().left;
+      offsetY = e.clientY - frame.getBoundingClientRect().top;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        frame.style.left = `${e.clientX - offsetX}px`;
+        frame.style.top = `${e.clientY - offsetY}px`;
+        frame.style.transform = 'none';
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+  </script>
+
 </body>
 </html>
