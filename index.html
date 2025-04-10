@@ -55,8 +55,8 @@
     .frame-box {
       border-radius: 12px;
       padding: 0;
-      width: 720px;
-      height: 405px;
+      width: 850px;
+      height: 350px;
       overflow: hidden;
       position: absolute;
       z-index: 5;
@@ -98,6 +98,12 @@
       width: 200px;
     }
 
+    .feedback {
+      margin-top: 10px;
+      color: white;
+      font-weight: bold;
+    }
+
     .buttons {
       position: absolute;
       bottom: 40px;
@@ -132,37 +138,46 @@
   <div class="content">
     <div class="frame-box" id="draggable-frame">
       <button class="maximize-btn" onclick="maximizeFrame()">⛶</button>
-      <img src="https://raw.githubusercontent.com/myasus0098/my-website/main/inception-paris.jpg" alt="Movie Frame" />
+      <img id="frame-image" src="https://raw.githubusercontent.com/myasus0098/my-website/main/inception-paris.jpg" alt="Movie Frame" />
     </div>
   </div>
 
   <div class="input-area">
     <input type="text" id="movieInput" placeholder="Enter movie name..." />
+    <div class="feedback" id="feedback"></div>
   </div>
 
   <div class="buttons">
     <button class="open-btn" onclick="startTimer(); showFrameBox();">OPEN</button>
     <button class="submit-btn" onclick="submitGuess()">SUBMIT</button>
-    <button class="next-btn">NEXT</button>
+    <button class="next-btn" onclick="nextFrame()">NEXT</button>
   </div>
 
   <script>
     let timerElement = document.getElementById('timer');
+    let feedbackElement = document.getElementById('feedback');
+    let movieInput = document.getElementById('movieInput');
     let playerAScore = 0;
     let playerBScore = 0;
     let timer;
     let timeLeft = 15;
+    let currentPlayer = 'A'; // You can toggle between A/B dynamically
+    const correctAnswer = 'inception';
 
     function startTimer() {
       clearInterval(timer);
       timeLeft = 15;
       timerElement.textContent = 'Timer: ' + timeLeft;
+      timerElement.style.color = 'white';
       timer = setInterval(() => {
         timeLeft--;
         timerElement.textContent = 'Timer: ' + timeLeft;
+        if (timeLeft <= 5) {
+          timerElement.style.color = 'red';
+        }
         if (timeLeft === 0) {
           clearInterval(timer);
-          updateScore();
+          feedbackElement.textContent = "Time's up!";
         }
       }, 1000);
     }
@@ -170,29 +185,52 @@
     function showFrameBox() {
       const frame = document.getElementById('draggable-frame');
       frame.style.display = 'block';
-      frame.style.top = '50%';
-      frame.style.left = '50%';
+      frame.style.top = '37%';
+      frame.style.left = '47%';
       frame.style.transform = 'translate(-50%, -50%)';
     }
 
     function submitGuess() {
-      const input = document.getElementById('movieInput').value.trim().toLowerCase();
-      if (input === 'correct') {
-        alert('Correct Guess!');
+      const input = movieInput.value.trim().toLowerCase();
+      if (!input) return;
+
+      if (input === correctAnswer) {
+        feedbackElement.textContent = '✅ Correct!';
+        updateScore(currentPlayer);
+        clearInterval(timer);
+      } else {
+        feedbackElement.textContent = '❌ Wrong, try again!';
+      }
+
+      movieInput.value = '';
+    }
+
+    function updateScore(player) {
+      if (player === 'A') {
+        playerAScore += 10;
+        document.getElementById('player-a').textContent = 'Player A: ' + playerAScore;
+      } else {
+        playerBScore += 10;
+        document.getElementById('player-b').textContent = 'Player B: ' + playerBScore;
       }
     }
 
-    function updateScore() {
-      playerAScore += 10;
-      document.getElementById('player-a').textContent = 'Player A: ' + playerAScore;
+    function nextFrame() {
+      document.getElementById('draggable-frame').style.display = 'none';
+      movieInput.value = '';
+      feedbackElement.textContent = '';
+      timerElement.textContent = 'Timer: 0';
+      timerElement.style.color = 'white';
+      clearInterval(timer);
+      // Add logic to load next image here if needed
     }
 
     function maximizeFrame() {
       const frameBox = document.getElementById('draggable-frame');
       if (frameBox.classList.contains('fullscreen')) {
-        frameBox.style.width = '720px';
-        frameBox.style.height = '405px';
-        frameBox.style.top = '50%';
+        frameBox.style.width = '800px';
+        frameBox.style.height = '450px';
+        frameBox.style.top = '40%';
         frameBox.style.left = '50%';
         frameBox.style.transform = 'translate(-50%, -50%)';
         frameBox.classList.remove('fullscreen');
@@ -205,6 +243,14 @@
         frameBox.classList.add('fullscreen');
       }
     }
+
+    // Optional: Prevent Enter from refreshing
+    movieInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitGuess();
+      }
+    });
 
     // Make frame draggable
     const frame = document.getElementById('draggable-frame');
