@@ -1,68 +1,26 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f8f8ff;
-}
-
-.game-container {
-    text-align: center;
-    max-width: 600px;
-    width: 90%;
-}
-
-.clue-box {
-    background-color: #e6e1fc;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #00695c;
-    margin-bottom: 20px;
-}
-
-.title .movie-banner {
-    background-color: #e6e1fc;
-    color: white;
-    padding: 5px 10px;
-    font-size: 1rem;
-    border-radius: 5px;
-    margin-left: 10px;
-}
-
-.input-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#guess-input {
-    width: 80%;
-    padding: 10px;
-    margin-bottom: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-#submit-button {
-    background-color: #4caf50;
-    color: white;
-    padding: 10px 20px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#submit-button:hover {
-    background-color: #45a049;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess The Movie</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="clue-box">
+            <!-- Add your clues or images dynamically here -->
+            <p id="clue">Clue goes here...</p>
+        </div>
+        <div class="title">
+            <span>GUESS THE</span>
+            <span class="movie-banner">MOVIE</span>
+        </div>
+        <div class="input-section">
+            <input type="text" id="guess-input" placeholder="Enter your guess">
+            <button id="submit-button">Submit</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
