@@ -70,6 +70,13 @@
       justify-content: center;
     }
 
+    .frame-counter {
+      font-size: 10px;
+      font-weight: bold;
+      color: black;
+      z-index: 20;
+    }
+
     .content {
       margin-top: 60px;
       text-align: center;
@@ -97,7 +104,8 @@
       position: absolute;
       bottom: 40px;
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      align-items: center;
       gap: 10px;
       z-index: 20;
     }
@@ -134,6 +142,7 @@
   </div>
 
   <div class="buttons">
+    <div class="frame-counter">Frame <span id="frame-counter">1</span></div>
     <button class="open-btn" onclick="startTimer(); showFrameBox();">OPEN</button>
     <button class="prev-btn" onclick="previousFrame()">PREVIOUS</button>
     <button class="next-btn" onclick="nextFrame()">NEXT</button>
@@ -141,13 +150,14 @@
 
   <script>
     let timerElement = document.getElementById('timer');
+    let counterElement = document.getElementById('frame-counter');
     let scores = {
       A: 0,
       B: 0,
       C: 0,
       D: 0
     };
-    
+
     let frames = [
       "https://raw.githubusercontent.com/myasus0098/my-website/main/inception-paris.jpg",
       "https://raw.githubusercontent.com/myasus0098/my-website/main/images/Godzilla_vs_Kong_025.jpg",
@@ -206,6 +216,10 @@
       });
     }
 
+    function updateFrameCounter() {
+      counterElement.textContent = currentFrame + 1;
+    }
+
     function nextFrame() {
       currentFrame = (currentFrame + 1) % frames.length;
       document.getElementById('frame-image').src = frames[currentFrame];
@@ -213,6 +227,7 @@
       timerElement.textContent = '15';
       timerElement.style.color = 'white';
       clearInterval(timer);
+      updateFrameCounter();
     }
 
     function previousFrame() {
@@ -222,6 +237,7 @@
       timerElement.textContent = '15';
       timerElement.style.color = 'white';
       clearInterval(timer);
+      updateFrameCounter();
     }
 
     const frame = document.getElementById('draggable-frame');
@@ -245,6 +261,8 @@
     document.addEventListener('mouseup', () => {
       isDragging = false;
     });
+
+    updateFrameCounter();
   </script>
 
 </body>
