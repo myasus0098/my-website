@@ -147,7 +147,11 @@
     <button class="next-btn">NEXT</button>
   </div>
 
+  <!-- Socket.IO Script -->
+  <script src="https://movie-guess-backend.onrender.com/socket.io/socket.io.js"></script>
   <script>
+    const socket = io("https://movie-guess-backend.onrender.com");
+
     let timerElement = document.getElementById('timer');
     let playerAScore = 0;
     let playerBScore = 0;
@@ -178,10 +182,13 @@
 
     function submitGuess() {
       const input = document.getElementById('movieInput').value.trim().toLowerCase();
-      if (input === 'correct') {
-        alert('Correct Guess!');
-      }
+      socket.emit("guess", input);
     }
+
+    socket.on("scoreUpdate", ({ playerA, playerB }) => {
+      document.getElementById('player-a').textContent = 'Player A: ' + playerA;
+      document.getElementById('player-b').textContent = 'Player B: ' + playerB;
+    });
 
     function updateScore() {
       playerAScore += 10;
