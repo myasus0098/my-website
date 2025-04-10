@@ -148,6 +148,15 @@
       D: 0
     };
 
+    let frames = [
+      "https://raw.githubusercontent.com/myasus0098/my-website/main/inception-paris.jpg",
+      "https://raw.githubusercontent.com/myasus0098/my-website/main/images/Godzilla_vs_Kong_025.jpg",
+      "https://raw.githubusercontent.com/myasus0098/my-website/main/images/kong-skull-island.jpg",
+      "https://raw.githubusercontent.com/myasus0098/my-website/main/images/a-quiet-place.jpg",
+      "https://raw.githubusercontent.com/myasus0098/my-website/main/images/the-incredible-hulk.jpg"
+    ];
+
+    let currentFrame = 0;
     let timer;
     let timeLeft = 15;
 
@@ -174,6 +183,7 @@
       frame.style.top = '37%';
       frame.style.left = '47%';
       frame.style.transform = 'translate(-50%, -50%)';
+      frame.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function addPoints(player) {
@@ -195,6 +205,8 @@
     }
 
     function nextFrame() {
+      currentFrame = (currentFrame + 1) % frames.length;
+      document.getElementById('frame-image').src = frames[currentFrame];
       document.getElementById('draggable-frame').style.display = 'none';
       timerElement.textContent = '15';
       timerElement.style.color = 'white';
@@ -202,13 +214,14 @@
     }
 
     function previousFrame() {
+      currentFrame = (currentFrame - 1 + frames.length) % frames.length;
+      document.getElementById('frame-image').src = frames[currentFrame];
       document.getElementById('draggable-frame').style.display = 'none';
       timerElement.textContent = '15';
       timerElement.style.color = 'white';
       clearInterval(timer);
     }
 
-    // Make frame draggable
     const frame = document.getElementById('draggable-frame');
     let isDragging = false;
     let offsetX, offsetY;
