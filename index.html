@@ -32,6 +32,24 @@
       border-radius: 10px;
       color: white;
       font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .highlight {
+      background-color: gold !important;
+      color: black;
+    }
+
+    .plus-btn {
+      background-color: orange;
+      color: black;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-weight: bold;
+      cursor: pointer;
     }
 
     .timer {
@@ -39,12 +57,17 @@
       top: 20px;
       right: 20px;
       background-color: rgba(0, 0, 0, 0.6);
-      padding: 10px 20px;
-      border-radius: 10px;
+      padding: 20px;
+      border-radius: 50%;
       color: white;
       font-size: 18px;
       font-weight: bold;
       z-index: 20;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .content {
@@ -70,44 +93,11 @@
       object-fit: cover;
     }
 
-    .maximize-btn {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background: rgba(0, 0, 0, 0.6);
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 5px 10px;
-      font-size: 14px;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    .input-area {
-      position: absolute;
-      bottom: 130px;
-      z-index: 20;
-    }
-
-    input {
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: none;
-      width: 200px;
-    }
-
-    .feedback {
-      margin-top: 10px;
-      color: white;
-      font-weight: bold;
-    }
-
     .buttons {
       position: absolute;
       bottom: 40px;
       display: flex;
+      flex-wrap: wrap;
       gap: 10px;
       z-index: 20;
     }
@@ -123,61 +113,57 @@
 
     .open-btn { background-color: green; color: white; }
     .next-btn { background-color: red; color: white; }
-    .submit-btn { background-color: blue; color: white; }
+    .prev-btn { background-color: blue; color: white; }
   </style>
 </head>
 <body>
 
   <div class="player-scores">
-    <div class="player" id="player-a">Player A: 0</div>
-    <div class="player" id="player-b">Player B: 0</div>
+    <div class="player" id="player-a">Player A: <span id="score-a">0</span> <button class="plus-btn" onclick="addPoints('A')">+</button></div>
+    <div class="player" id="player-b">Player B: <span id="score-b">0</span> <button class="plus-btn" onclick="addPoints('B')">+</button></div>
+    <div class="player" id="player-c">Player C: <span id="score-c">0</span> <button class="plus-btn" onclick="addPoints('C')">+</button></div>
+    <div class="player" id="player-d">Player D: <span id="score-d">0</span> <button class="plus-btn" onclick="addPoints('D')">+</button></div>
   </div>
 
-  <div class="timer" id="timer">Timer: 0</div>
+  <div class="timer" id="timer">15</div>
 
   <div class="content">
     <div class="frame-box" id="draggable-frame">
-      <button class="maximize-btn" onclick="maximizeFrame()">⛶</button>
       <img id="frame-image" src="https://raw.githubusercontent.com/myasus0098/my-website/main/inception-paris.jpg" alt="Movie Frame" />
     </div>
   </div>
 
-  <div class="input-area">
-    <input type="text" id="movieInput" placeholder="Enter movie name..." />
-    <div class="feedback" id="feedback"></div>
-  </div>
-
   <div class="buttons">
     <button class="open-btn" onclick="startTimer(); showFrameBox();">OPEN</button>
-    <button class="submit-btn" onclick="submitGuess()">SUBMIT</button>
+    <button class="prev-btn" onclick="previousFrame()">PREVIOUS</button>
     <button class="next-btn" onclick="nextFrame()">NEXT</button>
   </div>
 
   <script>
     let timerElement = document.getElementById('timer');
-    let feedbackElement = document.getElementById('feedback');
-    let movieInput = document.getElementById('movieInput');
-    let playerAScore = 0;
-    let playerBScore = 0;
+    let scores = {
+      A: 0,
+      B: 0,
+      C: 0,
+      D: 0
+    };
+
     let timer;
     let timeLeft = 15;
-    let currentPlayer = 'A'; // You can toggle between A/B dynamically
-    const correctAnswer = 'inception';
 
     function startTimer() {
       clearInterval(timer);
       timeLeft = 15;
-      timerElement.textContent = 'Timer: ' + timeLeft;
+      timerElement.textContent = timeLeft;
       timerElement.style.color = 'white';
       timer = setInterval(() => {
         timeLeft--;
-        timerElement.textContent = 'Timer: ' + timeLeft;
+        timerElement.textContent = timeLeft;
         if (timeLeft <= 5) {
           timerElement.style.color = 'red';
         }
         if (timeLeft === 0) {
           clearInterval(timer);
-          feedbackElement.textContent = "Time's up!";
         }
       }, 1000);
     }
@@ -190,67 +176,37 @@
       frame.style.transform = 'translate(-50%, -50%)';
     }
 
-    function submitGuess() {
-      const input = movieInput.value.trim().toLowerCase();
-      if (!input) return;
-
-      if (input === correctAnswer) {
-        feedbackElement.textContent = '✅ Correct!';
-        updateScore(currentPlayer);
-        clearInterval(timer);
-      } else {
-        feedbackElement.textContent = '❌ Wrong, try again!';
-      }
-
-      movieInput.value = '';
+    function addPoints(player) {
+      scores[player] += 10;
+      document.getElementById(`score-${player.toLowerCase()}`).textContent = scores[player];
+      updateHighlight();
     }
 
-    function updateScore(player) {
-      if (player === 'A') {
-        playerAScore += 10;
-        document.getElementById('player-a').textContent = 'Player A: ' + playerAScore;
-      } else {
-        playerBScore += 10;
-        document.getElementById('player-b').textContent = 'Player B: ' + playerBScore;
-      }
+    function updateHighlight() {
+      const maxScore = Math.max(...Object.values(scores));
+      ['A', 'B', 'C', 'D'].forEach(p => {
+        const el = document.getElementById(`player-${p.toLowerCase()}`);
+        if (scores[p] === maxScore && maxScore > 0) {
+          el.classList.add('highlight');
+        } else {
+          el.classList.remove('highlight');
+        }
+      });
     }
 
     function nextFrame() {
       document.getElementById('draggable-frame').style.display = 'none';
-      movieInput.value = '';
-      feedbackElement.textContent = '';
-      timerElement.textContent = 'Timer: 0';
+      timerElement.textContent = '15';
       timerElement.style.color = 'white';
       clearInterval(timer);
-      // Add logic to load next image here if needed
     }
 
-    function maximizeFrame() {
-      const frameBox = document.getElementById('draggable-frame');
-      if (frameBox.classList.contains('fullscreen')) {
-        frameBox.style.width = '800px';
-        frameBox.style.height = '450px';
-        frameBox.style.top = '40%';
-        frameBox.style.left = '50%';
-        frameBox.style.transform = 'translate(-50%, -50%)';
-        frameBox.classList.remove('fullscreen');
-      } else {
-        frameBox.style.width = '100vw';
-        frameBox.style.height = '100vh';
-        frameBox.style.top = '0';
-        frameBox.style.left = '0';
-        frameBox.style.transform = 'none';
-        frameBox.classList.add('fullscreen');
-      }
+    function previousFrame() {
+      document.getElementById('draggable-frame').style.display = 'none';
+      timerElement.textContent = '15';
+      timerElement.style.color = 'white';
+      clearInterval(timer);
     }
-
-    // Optional: Prevent Enter from refreshing
-    movieInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        submitGuess();
-      }
-    });
 
     // Make frame draggable
     const frame = document.getElementById('draggable-frame');
