@@ -1,234 +1,185 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Movie Guess Game</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multiplayer Movie Game</title>
   <style>
     body {
-      background-image: url('https://raw.githubusercontent.com/myasus0098/my-website/main/A%20(4).png');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      height: 100vh;
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      color: white;
+      font-family: Arial, sans-serif;
       margin: 0;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      padding: 0;
     }
-
-    .player-scores {
+    #game-container {
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      gap: 20px;
+      padding: 20px;
+    }
+    #image-container {
+      position: relative;
+      background-color: #222;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #frame {
+      max-width: 100%;
+      max-height: 80vh;
+      display: none;
+      border: 4px solid white;
+      border-radius: 8px;
+    }
+    #open-btn {
       position: absolute;
-      top: 20px;
-      left: 20px;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: red;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+    }
+    #tools {
+      margin: 10px 0;
+    }
+    #tools input[type="color"], #tools input[type="range"], #tools button {
+      margin-right: 10px;
+    }
+    button.active {
+      background-color: #ffcc00;
+    }
+    #sidebar {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      z-index: 20;
     }
-
-    .player {
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 10px 15px;
-      border-radius: 10px;
-      color: white;
-      font-weight: bold;
-    }
-
-    .timer {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 10px 20px;
-      border-radius: 10px;
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
-      z-index: 20;
-    }
-
-    .content {
-      margin-top: 60px;
+    .score {
+      background-color: #333;
+      padding: 10px;
+      border-radius: 50%;
       text-align: center;
+      font-size: 18px;
     }
-
-    .frame-box {
-      border-radius: 12px;
-      padding: 0;
-      width: 720px;
-      height: 405px;
-      overflow: hidden;
-      position: absolute;
-      z-index: 5;
-      cursor: move;
-      display: none;
-    }
-
-    .frame-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .maximize-btn {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background: rgba(0, 0, 0, 0.6);
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 5px 10px;
-      font-size: 14px;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    .input-area {
-      position: absolute;
-      bottom: 130px;
-      z-index: 20;
-    }
-
-    input {
+    #guess-input, #next-btn {
       padding: 10px;
       font-size: 16px;
-      border-radius: 6px;
-      border: none;
-      width: 200px;
+      margin-top: 10px;
     }
-
-    .buttons {
-      position: absolute;
-      bottom: 40px;
-      display: flex;
-      gap: 10px;
-      z-index: 20;
+    canvas {
+      border: 2px solid #333;
+      border-radius: 10px;
+      background-color: white;
     }
-
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .open-btn { background-color: green; color: white; }
-    .next-btn { background-color: red; color: white; }
-    .submit-btn { background-color: blue; color: white; }
   </style>
 </head>
 <body>
-
-  <div class="player-scores">
-    <div class="player" id="player-a">Player A: 0</div>
-    <div class="player" id="player-b">Player B: 0</div>
-  </div>
-
-  <div class="timer" id="timer">Timer: 0</div>
-
-  <div class="content">
-    <div class="frame-box" id="draggable-frame">
-      <button class="maximize-btn" onclick="maximizeFrame()">⛶</button>
-      <img src="https://raw.githubusercontent.com/myasus0098/my-website/main/inception-paris.jpg" alt="Movie Frame" />
+  <div id="game-container">
+    <div>
+      <div id="tools">
+        <input type="color" id="color-picker" value="#000000">
+        <input type="range" id="brush-size" min="1" max="40" value="5" title="Brush Size">
+        <button id="pencil-tool">✏️</button>
+        <button id="brush-tool">🖌️</button>
+        <button id="eraser-tool">🧽</button>
+        <button id="clear-canvas">🗑️</button>
+      </div>
+      <canvas id="canvas" width="800" height="500"></canvas>
+      <div id="image-container">
+        <img id="frame" src="" alt="Movie Frame">
+        <button id="open-btn">OPEN</button>
+      </div>
+    </div>
+    <div id="sidebar">
+      <div class="score" id="score-a">A: 0</div>
+      <div class="score" id="score-b">B: 0</div>
+      <input type="text" id="guess-input" placeholder="MOVIE">
+      <button id="next-btn">NEXT</button>
     </div>
   </div>
 
-  <div class="input-area">
-    <input type="text" id="movieInput" placeholder="Enter movie name..." />
-  </div>
-
-  <div class="buttons">
-    <button class="open-btn" onclick="startTimer(); showFrameBox();">OPEN</button>
-    <button class="submit-btn" onclick="submitGuess()">SUBMIT</button>
-    <button class="next-btn">NEXT</button>
-  </div>
-
   <script>
-    let timerElement = document.getElementById('timer');
-    let playerAScore = 0;
-    let playerBScore = 0;
-    let timer;
-    let timeLeft = 15;
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
-    function startTimer() {
-      clearInterval(timer);
-      timeLeft = 15;
-      timerElement.textContent = 'Timer: ' + timeLeft;
-      timer = setInterval(() => {
-        timeLeft--;
-        timerElement.textContent = 'Timer: ' + timeLeft;
-        if (timeLeft === 0) {
-          clearInterval(timer);
-          updateScore();
-        }
-      }, 1000);
-    }
+    let drawing = false;
+    let currentTool = 'pencil';
+    let brushColor = '#000000';
+    let brushSize = 5;
 
-    function showFrameBox() {
-      const frame = document.getElementById('draggable-frame');
-      frame.style.display = 'block';
-      frame.style.top = '50%';
-      frame.style.left = '50%';
-      frame.style.transform = 'translate(-50%, -50%)';
-    }
+    canvas.addEventListener('mousedown', (e) => {
+      drawing = true;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+    });
 
-    function submitGuess() {
-      const input = document.getElementById('movieInput').value.trim().toLowerCase();
-      if (input === 'correct') {
-        alert('Correct Guess!');
-      }
-    }
+    canvas.addEventListener('mousemove', (e) => {
+      if (!drawing) return;
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.lineCap = 'round';
+      ctx.lineWidth = brushSize;
 
-    function updateScore() {
-      playerAScore += 10;
-      document.getElementById('player-a').textContent = 'Player A: ' + playerAScore;
-    }
-
-    function maximizeFrame() {
-      const frameBox = document.getElementById('draggable-frame');
-      if (frameBox.classList.contains('fullscreen')) {
-        frameBox.style.width = '720px';
-        frameBox.style.height = '405px';
-        frameBox.style.top = '50%';
-        frameBox.style.left = '50%';
-        frameBox.style.transform = 'translate(-50%, -50%)';
-        frameBox.classList.remove('fullscreen');
+      if (currentTool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
       } else {
-        frameBox.style.width = '100vw';
-        frameBox.style.height = '100vh';
-        frameBox.style.top = '0';
-        frameBox.style.left = '0';
-        frameBox.style.transform = 'none';
-        frameBox.classList.add('fullscreen');
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = brushColor;
       }
+
+      ctx.stroke();
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      drawing = false;
+      ctx.closePath();
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      drawing = false;
+    });
+
+    document.getElementById('color-picker').addEventListener('input', (e) => {
+      brushColor = e.target.value;
+    });
+
+    document.getElementById('brush-size').addEventListener('input', (e) => {
+      brushSize = e.target.value;
+    });
+
+    document.getElementById('pencil-tool').addEventListener('click', () => {
+      currentTool = 'pencil';
+      setActiveTool('pencil-tool');
+    });
+
+    document.getElementById('brush-tool').addEventListener('click', () => {
+      currentTool = 'brush';
+      setActiveTool('brush-tool');
+    });
+
+    document.getElementById('eraser-tool').addEventListener('click', () => {
+      currentTool = 'eraser';
+      setActiveTool('eraser-tool');
+    });
+
+    document.getElementById('clear-canvas').addEventListener('click', () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    document.getElementById('open-btn').addEventListener('click', () => {
+      document.getElementById('frame').style.display = 'block';
+    });
+
+    function setActiveTool(id) {
+      document.querySelectorAll('#tools button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
     }
-
-    // Make frame draggable
-    const frame = document.getElementById('draggable-frame');
-    let isDragging = false;
-    let offsetX, offsetY;
-
-    frame.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      offsetX = e.clientX - frame.getBoundingClientRect().left;
-      offsetY = e.clientY - frame.getBoundingClientRect().top;
-    });
-
-    document.addEventListener('mousemove', (e) => {
-      if (isDragging) {
-        frame.style.left = `${e.clientX - offsetX}px`;
-        frame.style.top = `${e.clientY - offsetY}px`;
-        frame.style.transform = 'none';
-      }
-    });
-
-    document.addEventListener('mouseup', () => {
-      isDragging = false;
-    });
   </script>
-
 </body>
 </html>
